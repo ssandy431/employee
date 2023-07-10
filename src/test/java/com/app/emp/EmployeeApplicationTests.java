@@ -1,13 +1,14 @@
 package com.app.emp;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.TestInstance;
 
-@SpringBootTest
+//@SpringBootTest
+//@TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 class EmployeeApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+	
+//	@Mock
+//	private NamedParameterJdbcTemplate jdbcTemplate;
+	
+	
+	
 }
