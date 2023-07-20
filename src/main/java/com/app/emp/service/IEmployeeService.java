@@ -1,13 +1,13 @@
 package com.app.emp.service;
 
-import com.app.emp.dto.Employee;
+import com.app.emp.dto.EmployeeDTO;
 import com.app.emp.response.DataResponse;
 
 public interface IEmployeeService {
 	
-	public Employee createEmployee(Employee employee);
+	public EmployeeDTO createEmployee(EmployeeDTO employee);
 	public DataResponse getAllEmployees(int pageNo, int pageSize,String sortBy,String sortDir);
-	public Employee getEmployeeById(String employeeId);
-	public Employee updateEmployeeById(Employee employee,String employeeId);
+	public DataResponse getEmployeeById(String employeeId);
+	public EmployeeDTO updateEmployeeById(EmployeeDTO employee,String employeeId);
 
 }

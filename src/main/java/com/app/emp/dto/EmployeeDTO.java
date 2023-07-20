@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee {
+public class EmployeeDTO {
 	
 	private Long id;
 	
@@ -40,12 +40,12 @@ public class Employee {
 //	@Size(min = 10,max = 10,message = "Please provide valid phone number.")
 	@Pattern(regexp = "^\\d{10}$", message = "Please enter valid phone number.")
     private String phoneNumber;
-    private Address address;
+    private AddressDTO address;
     @NotNull(message = "Employee doj(date of joining) field is manadatory")
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$",message = "Please enter valid date in YYYY-MM-DD format only.")
     private String doj;
-	private Department department;
-	private Set<Education> education;
+	private DepartmentDTO department;
+	private Set<EducationDTO> education;
 	@NotBlank(message = "jobTitle field is missing.")
     private String jobTitle;
 	@NotNull(message = "salary is mandatory.")
@@ -62,6 +62,7 @@ public class Employee {
     @NotNull(message = "bloodGroup is manadatory.")
     @NotBlank(message = "bloodGroup is manadatory.")
     private String bloodGroup;
+    @Pattern(regexp = "^[0-9]*", message = "Please enter valid alternate mobile number.")
     private String alternatePhoneNumber;
     @NotNull(message = "officialEmailId is manadatory.")
     @NotBlank(message = "officialEmailId is manadatory.")

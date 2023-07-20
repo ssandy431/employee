@@ -3,6 +3,7 @@ package com.app.emp.config;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +18,7 @@ import com.app.emp.util.JwtUtil;
 import com.app.emp.util.exception.CustomException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,34 +77,63 @@ public class RequestFilter extends OncePerRequestFilter {
 				}
 
 			} catch (CustomException e) {
-				e.printStackTrace();
+				System.out.println("inside custom ex");
+//				e.printStackTrace();
 				errorJsonResponse(response, e);
 				return;
 			}
 			catch (Exception e) {
+				System.out.println("inside ex ex");
 				e.printStackTrace();
-				errorJsonResponse(response, null);
+				errorJsonResponse(response, e);
 				return;
 			}
 		}
 	}
 
-	private HttpServletResponse errorJsonResponse(HttpServletResponse response, CustomException ex) throws IOException {
+//	private HttpServletResponse errorJsonResponse(HttpServletResponse response, CustomException ex) throws IOException {
+//		ErrorResponseBean bean = new ErrorResponseBean();
+//		if (ex != null) {
+//			bean.setErrCode(Integer.parseInt(ex.getErrorCode()));
+//			bean.setMessage(ex.getErrorMessage());
+//		} else {
+//			bean.setErrCode(401);
+//			bean.setMessage("You are not authorized to access the data.");
+//		}
+//
+//		byte[] resToSend = restResponseByte(bean);
+//		response.setHeader("Content-type", "application/json");
+//		response.setStatus(bean.getErrCode());
+//		response.getOutputStream().write(resToSend);
+//		return response;
+//
+//	}
+	private HttpServletResponse errorJsonResponse(HttpServletResponse response, Exception ex) throws IOException {
 		ErrorResponseBean bean = new ErrorResponseBean();
-		if (ex != null) {
-			bean.setErrCode(Integer.parseInt(ex.getErrorCode()));
-			bean.setMessage(ex.getErrorMessage());
-		} else {
+		System.out.println((ex instanceof RedisConnectionFailureException));
+		if(ex instanceof ExpiredJwtException)
+		{
+			bean.setErrCode(401);
+			bean.setMessage("Your session has been expired. Please login again.");
+		}
+		else if(ex instanceof CustomException e)
+		{
+			bean.setErrCode(Integer.parseInt(e.getErrorCode()));
+			bean.setMessage(e.getErrorMessage());
 			bean.setErrCode(401);
 			bean.setMessage("You are not authorized to access the data.");
 		}
-
+		else
+		{
+			bean.setErrCode(500);
+			bean.setMessage("Some problems arises. Please try after somtimes.");
+		}
 		byte[] resToSend = restResponseByte(bean);
 		response.setHeader("Content-type", "application/json");
 		response.setStatus(bean.getErrCode());
 		response.getOutputStream().write(resToSend);
 		return response;
-
+		
 	}
 
 	private byte[] restResponseByte(ErrorResponseBean bean) throws IOException {

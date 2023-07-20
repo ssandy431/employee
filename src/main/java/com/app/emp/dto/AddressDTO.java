@@ -1,6 +1,6 @@
 package com.app.emp.dto;
 
-public class Address {
+public class AddressDTO {
 	
 	private Long id;
     private String street;
@@ -9,7 +9,7 @@ public class Address {
     private String pinCode;
     private String country;
 
-    public Address() {super();}
+    public AddressDTO() {super();}
     
     public Long getId() {
 		return id;
@@ -21,7 +21,7 @@ public class Address {
 		this.id = id;
 	}
 
-	public Address(Long id,String street, String city, String state, String pinCode, String country) {
+	public AddressDTO(Long id,String street, String city, String state, String pinCode, String country) {
     	this.id=id;
     	this.street = street;
         this.city = city;

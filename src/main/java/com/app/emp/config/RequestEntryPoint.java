@@ -52,7 +52,7 @@ public class RequestEntryPoint implements AuthenticationEntryPoint, Serializable
 	public void commence(HttpServletRequest req, HttpServletResponse res,
 			ExpiredJwtException ex) throws IOException {
 		Map<String, Object> opMap = new HashMap<>();
-		opMap.put("message", "Session expired. Please login.");
+		opMap.put("message", "Session expired. Please login again.");
 		opMap.put("isSuccess", false);
 		res.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		res.setStatus(HttpStatus.UNAUTHORIZED.value());

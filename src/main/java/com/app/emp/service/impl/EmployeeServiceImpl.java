@@ -11,7 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.app.emp.dto.Employee;
+import com.app.emp.dto.EmployeeDTO;
+import com.app.emp.entity.Employee;
 import com.app.emp.repository.EmployeeRepository;
 import com.app.emp.response.DataResponse;
 import com.app.emp.service.IEmployeeService;
@@ -27,25 +28,26 @@ public class EmployeeServiceImpl implements IEmployeeService {
 	private ModelMapper mapper;
 
 	@Override
-	public Employee createEmployee(Employee employee) {
-		com.app.emp.entity.Employee employeeEnt= mapper.map(employee, com.app.emp.entity.Employee.class);
-		com.app.emp.entity.Employee emp = repository.save(employeeEnt);
+	public EmployeeDTO createEmployee(EmployeeDTO employee) {
+		Employee employeeEnt= mapper.map(employee, Employee.class);
+		Employee emp = repository.save(employeeEnt);
 		return convertEntityToDTO(emp);
 	}
 	
-	private Employee convertEntityToDTO(com.app.emp.entity.Employee emp)
+	private EmployeeDTO convertEntityToDTO(Employee emp)
 	{
-		return mapper.map(emp, Employee.class);
+		return mapper.map(emp, EmployeeDTO.class);
 	}
 
 	@Override
 	public DataResponse getAllEmployees(int pageNo, int pageSize,String sortBy,String sortDir) {
 		Sort sort = Sort.Direction.ASC.name().equalsIgnoreCase(sortDir) ? Sort.by(sortBy).ascending() :Sort.by(sortBy).descending();
 		Pageable page = PageRequest.of(pageNo, pageSize, sort);
-		Page<com.app.emp.entity.Employee> employees =  repository.findAll(page);
-		List<Employee> employeeList = employees.stream().map(employee->convertEntityToDTO(employee)).collect(Collectors.toList());
+		Page<Employee> employees =  repository.findAll(page);
+		List<EmployeeDTO> employeeList = employees.stream().map(employee->convertEntityToDTO(employee)).collect(Collectors.toList());
 		DataResponse response = new DataResponse();
 		response.setData(employeeList);
+		
 		response.setIsSuccess(true);
 		response.setPageNo(pageNo);
 		response.setPageSize(pageSize);
@@ -56,24 +58,45 @@ public class EmployeeServiceImpl implements IEmployeeService {
 	}
 
 	@Override
-	public Employee getEmployeeById(String employeeId) {
-		com.app.emp.entity.Employee employee = repository.findByEmployeeId(employeeId);
-
-		if(employee ==null){throw new ResourceNotFoundException("Employee", "Id", employeeId);}
-		return convertEntityToDTO(employee);
+	public DataResponse getEmployeeById(String employeeIdOrName) {
+		String regex = "^[a-zA-Z]+";
+		DataResponse response = new DataResponse();
+		if(!employeeIdOrName.matches(regex))
+		{
+			Employee employee = repository.findByEmployeeId(employeeIdOrName)
+					.orElseThrow(()->new ResourceNotFoundException("Employee", "Id", employeeIdOrName));
+			response.setData(convertEntityToDTO(employee));
+		}
+		else
+		{
+			List<Employee> employees = repository.findByEmployeeName(employeeIdOrName);
+			response.setData(employees);
+		}
+		response.setIsSuccess(true);
+		return response ;
 	}
 
 
 	@Override
-	public Employee updateEmployeeById(Employee dto, String employeeId) {
-		com.app.emp.entity.Employee emp = repository.findByEmployeeId(employeeId);
-		if(emp ==null){throw new ResourceNotFoundException("Employee", "Id", employeeId);}
-		
-		emp.setMartialStatus(dto.getMartialStatus());
-		emp.setBloodGroup(dto.getBloodGroup());
-		emp.setAlternatePhoneNumber(dto.getAlternatePhoneNumber());
+	public EmployeeDTO updateEmployeeById(EmployeeDTO dto, String employeeId) {
+		Employee emp = repository.findByEmployeeId(employeeId)
+				.orElseThrow(()->new ResourceNotFoundException("Employee", "Id", employeeId));
+		if(dto.getMartialStatus() != null && !dto.getMartialStatus().isBlank())
+		{
+			emp.setMartialStatus(dto.getMartialStatus());
+		}
+		if(dto.getBloodGroup() != null && !dto.getBloodGroup().isBlank())emp.setBloodGroup(dto.getBloodGroup());
+		if(dto.getAlternatePhoneNumber() != null && !dto.getAlternatePhoneNumber().isBlank())
+		{
+			emp.setAlternatePhoneNumber(dto.getAlternatePhoneNumber());
+		}
+		if(dto.getEmail() != null && !dto.getEmail().isBlank())
 		emp.setEmail(dto.getEmail());
-		com.app.emp.entity.Employee updatedEmp = repository.save(emp);
+		
+		if(dto.getDesignation() != null && !dto.getDesignation().isBlank())
+		emp.setDesignation(dto.getDesignation());
+		
+		Employee updatedEmp = repository.save(emp);
 		
 		return convertEntityToDTO(updatedEmp);
 	}

@@ -1,18 +1,15 @@
 package com.app.emp.dto;
 
-import java.util.List;
-
-public class Department {
+public class DepartmentDTO {
 	private Long departmentId;
 	private String departmentName;
-	private List<Employee> employees;
 
-	public Department() {
+	public DepartmentDTO() {
 	}
 
-	public Department(Long departmentId, String name, List<Employee> employees) {
+	public DepartmentDTO(Long departmentId, String name) {
 		this.departmentId = departmentId;
-		this.employees = employees;
+		this.departmentName = name;
 	}
 
 	public Long getDepartmentId() {
@@ -29,13 +26,5 @@ public class Department {
 
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
-	}
-
-	public List<Employee> getEmployees() {
-		return employees;
-	}
-
-	public void setEmployees(List<Employee> employees) {
-		this.employees = employees;
 	}
 }

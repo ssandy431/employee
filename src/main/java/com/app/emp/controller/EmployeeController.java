@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.emp.dto.Employee;
+import com.app.emp.dto.EmployeeDTO;
 import com.app.emp.response.DataResponse;
 import com.app.emp.service.IEmployeeService;
 
@@ -35,9 +35,9 @@ public class EmployeeController {
 	
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping(value ="/create",produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee dto)
+	public ResponseEntity<EmployeeDTO> createEmployee(@Valid @RequestBody EmployeeDTO dto)
 	{
-		Employee emp = employeeService.createEmployee(dto);
+		EmployeeDTO emp = employeeService.createEmployee(dto);
 		return new ResponseEntity<>(emp, HttpStatus.CREATED);
 	}
 	
@@ -52,15 +52,15 @@ public class EmployeeController {
 	}
 	
 	@GetMapping(value = "/{empId}")
-	public ResponseEntity<Employee> getEmployeeById(@PathVariable String empId)
+	public ResponseEntity<DataResponse> getEmployeeById(@PathVariable String empId)
 	{
-		return new ResponseEntity<Employee>(employeeService.getEmployeeById(empId),HttpStatus.OK);
+		return new ResponseEntity<DataResponse>(employeeService.getEmployeeById(empId),HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/update/{empId}")
-	public ResponseEntity<Employee> updateEmployeeByEmpId(@RequestBody Employee dto,@PathVariable String empId)
+	public ResponseEntity<EmployeeDTO> updateEmployeeByEmpId(@RequestBody EmployeeDTO dto,@PathVariable String empId)
 	{
-		return new ResponseEntity<Employee>(employeeService.updateEmployeeById(dto, empId),HttpStatus.OK);
+		return new ResponseEntity<EmployeeDTO>(employeeService.updateEmployeeById(dto, empId),HttpStatus.OK);
 	}
 	
 }
